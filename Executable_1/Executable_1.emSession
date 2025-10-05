@@ -1,0 +1,56 @@
+<!DOCTYPE CrossStudio_Session_File>
+<session>
+ <Bookmarks/>
+ <Breakpoints groups="Breakpoints" active_group="Breakpoints"/>
+ <ExecutionProfileWindow/>
+ <FrameBuffer/>
+ <Memory1/>
+ <Memory2/>
+ <Memory3/>
+ <Memory4/>
+ <Project>
+  <ProjectSessionItem path="Executable_1"/>
+  <ProjectSessionItem path="Executable_1;Executable_1"/>
+  <ProjectSessionItem path="Executable_1;Executable_1;CMSIS Files"/>
+  <ProjectSessionItem path="Executable_1;Executable_1;lib"/>
+  <ProjectSessionItem path="Executable_1;Executable_1;Script Files"/>
+  <ProjectSessionItem path="Executable_1;Executable_1;Source Files"/>
+  <ProjectSessionItem path="Executable_1;Executable_1;System Files"/>
+ </Project>
+ <Register1/>
+ <Register2/>
+ <Register3/>
+ <Register4/>
+ <Threads>
+  <ThreadsWindow showLists=""/>
+ </Threads>
+ <TraceWindow>
+  <Trace enabled="Yes"/>
+ </TraceWindow>
+ <Watch1>
+  <Watches active="1" update="Never"/>
+ </Watch1>
+ <Watch2>
+  <Watches active="0" update="Never"/>
+ </Watch2>
+ <Watch3>
+  <Watches active="0" update="Never"/>
+ </Watch3>
+ <Watch4>
+  <Watches active="0" update="Never"/>
+ </Watch4>
+ <Files>
+  <SessionOpenFile windowGroup="DockEditLeft" x="6" y="15" useTextEdit="1" path="STM32L432KC_FLASH.h" left="0" top="0" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="1" y="8" useTextEdit="1" path="STM32L432KC_FLASH.c" left="0" top="0" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="1" y="36" useTextEdit="1" path="STM32L432KC_RCC.c" left="0" top="0" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="6" y="16" useTextEdit="1" path="STM32L432KC_RCC.h" left="0" top="0" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="1" y="119" useTextEdit="1" path="STM32L432KC_GPIO.c" left="0" top="75" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="6" y="107" useTextEdit="1" path="STM32L432KC_GPIO.h" left="0" top="63" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="9" useTextEdit="1" path="STM32L432KC_TIM.c" left="0" top="0" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="6" y="18" useTextEdit="1" path="STM32L432KC_TIM.h" left="0" top="0" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="25" y="80" useTextEdit="1" path="motor_read.c" left="0" selected="1" top="40" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="23" y="9" useTextEdit="1" path="main.h" left="0" top="0" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="23" y="10" useTextEdit="1" path="STM32L432KC.h" left="0" top="0" codecName="Default"/>
+ </Files>
+ <EMStudioWindow activeProject="Executable_1" fileDialogDefaultFilter="*.c" autoConnectTarget="J-Link" buildConfiguration="Debug" sessionSettings="" debugSearchFileMap="" fileDialogInitialDirectory="" debugSearchPath="" autoConnectCapabilities="3199"/>
+</session>
