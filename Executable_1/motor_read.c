@@ -45,6 +45,7 @@ int main(void) {
 
   // Initialize timer
   RCC->APB1ENR1 |= RCC_APB1ENR1_TIM2EN;
+  RCC->APB2ENR |= RCC_APB2ENR_TIM15EN;
   initTIM(DELAY_TIM);
   initTIM(PRINT_TIM);
 
@@ -53,7 +54,7 @@ int main(void) {
   A = digitalRead(MOTORA_PIN);
   int volatile B;
   B = digitalRead(MOTORB_PIN);
-  printf("hi");
+  printf("hi %f", (float) 0.2222);
 
   int volatile count = 0;
   int volatile dir = 1;
@@ -80,14 +81,19 @@ int main(void) {
   EXTI->RTSR1 |= (1 << gpioPinOffset(MOTORA_PIN));
   EXTI->RTSR1 |= (1 << gpioPinOffset(MOTORB_PIN));
 
-  // Enable interrupts for timer 2 (print timer)
-  PRINT_TIM->DIER |= (1 << 6);
-  PRINT_TIM->DIER |= (1 << 0);
-
   // Turn on EXTI interrupt in NVIC_ISER
   NVIC->ISER[0] |= (1 << EXTI0_IRQn);
   NVIC->ISER[0] |= (1 << EXTI1_IRQn);
-  NVIC->ISER[0] |= (1 << TIM2_IRQn);        
+  NVIC->ISER[0] |= (1 << TIM2_IRQn);   
+
+  // Enable interrupts for timer 2 (print timer)
+  printf("hi2");
+  // PRINT_TIM->DIER |= (1 << 6);
+  PRINT_TIM->DIER |= (1 << 0);
+  // Disable interrupts for timer 15
+  DELAY_TIM->DIER &= ~(1 << 0);
+  printf("hi3");
+     
   
   while(1) {
     delay_millis(DELAY_TIM, 10);
@@ -175,13 +181,18 @@ void EXTI1_IRQHandler(void){
 void TIM2_IRQHandler(void){
   // Check that the timer was what triggered the interrupt 
   if (NVIC->ICPR[0] & (1 << TIM2_IRQn)) {
+    // clear interrupt
+    printf("print1");
+    NVIC->ICPR[0] |= (1 << TIM2_IRQn);
+    printf("print2");
+
     // If so, reset timer 
     init_delay(PRINT_TIM, 1000);
-
-    // clear interrupt
-    NVIC->ICPR[0] |= (1 << TIM2_IRQn);
+    printf("print3");
 
     // Set flag
     flagPrint = 1;
+    printf("print4");
+
   }
 }
