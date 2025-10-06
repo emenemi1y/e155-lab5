@@ -17,10 +17,23 @@ void initTIM(TIM_TypeDef * TIMx){
 }
 
 void delay_millis(TIM_TypeDef * TIMx, uint32_t ms){
-  TIMx->ARR = ms;// Set timer max count
+  TIMx->ARR = ms; // Set timer max count
   TIMx->EGR |= 1;     // Force update
   TIMx->SR &= ~(0x1); // Clear UIF
   TIMx->CNT = 0;      // Reset count
 
   while(!(TIMx->SR & 1)); // Wait for UIF to go high
+}
+
+void resetTIM(TIM_TypeDef * TIMx) {
+  TIMx->SR &= ~(0x1); // Clear UIF
+  TIMx->CNT = 0; // Reset count
+}
+
+void init_delay(TIM_TypeDef * TIMx, uint32_t ms) {
+  TIMx->ARR = ms;     // Set timer max count
+  TIMx->EGR |= 1;     // Force update
+  TIMx->SR &= ~(0x1); // Clear UIF
+  TIMx->CNT = 0;      // Reset count
+
 }

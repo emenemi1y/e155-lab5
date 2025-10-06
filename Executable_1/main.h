@@ -13,6 +13,7 @@
 
 #define MOTORA_PIN PB0
 #define MOTORB_PIN PB1
-#define READ_TIM TIM2
+#define DELAY_TIM TIM15
+#define PRINT_TIM TIM2
 
 #endif // MAIN_H

@@ -5,9 +5,39 @@
 
 #include "main.h"
 
-int flagA, flagB;
+volatile int flagA;
+volatile int flagB;
+volatile int flagPrint;
+
+// For printf
+int _write(int file, char *ptr, int len) {
+  int i = 0;
+  for (i = 0; i < len; i++) {
+    ITM_SendChar((*ptr++));
+  }
+  return len;
+}
+
+// Calculate velocity -- there are 120 sensors per revolution and 
+// an interrupt is generated 4 times each sensor 
+float calcVelocity(int count) {
+  float v;
+  v = (float) count / ( (float) 4 * 120);
+  return v;
+}
+
+void printVelocity(float velocity) {
+  
+  printf("Velocity: %f rev/s\n", velocity);
+
+}
+
 
 int main(void) {
+  flagA = 0;
+  flagB = 0;
+  flagPrint = 0;
+  
   // Enable both motor inputs as inputs:
   gpioEnable(GPIO_PORT_B);
   pinMode(MOTORA_PIN, GPIO_INPUT);
@@ -15,7 +45,8 @@ int main(void) {
 
   // Initialize timer
   RCC->APB1ENR1 |= RCC_APB1ENR1_TIM2EN;
-  initTIM(READ_TIM);
+  initTIM(DELAY_TIM);
+  initTIM(PRINT_TIM);
 
   // Enable SYSCFG clock domain in RCC
   RCC->APB2ENR |= RCC_APB2ENR_SYSCFGEN;
@@ -39,25 +70,71 @@ int main(void) {
   EXTI->RTSR1 |= (1 << gpioPinOffset(MOTORA_PIN));
   EXTI->RTSR1 |= (1 << gpioPinOffset(MOTORB_PIN));
 
+  // Enable interrupts for timer 15 (delay timer)
+  DELAY_TIM->DIER |= (1 << 6);
+
   // Turn on EXTI interrupt in NVIC_ISER
   NVIC->ISER[0] |= (1 << EXTI0_IRQn);
   NVIC->ISER[0] |= (1 << EXTI1_IRQn);
+  NVIC->ISER[0] |= (1 << 28);         // TIM2 interrupt is interrupt #28 according to the vector table
 
   // Take initial readings and initialize variables
-  int prevA = digitalRead(MOTORA_PIN);
-  int prevB = digitalRead(MOTORB_PIN);
-  int currA = prevA;
-  int currB = prevB;
+  int A = digitalRead(MOTORA_PIN);
+  int B = digitalRead(MOTORB_PIN);
 
-  int prevTimA, prevTimB;
-  int TimA, TimB;
-  int counterOverflow = 0;
+  int count = 0;
+  int dir = 1;
   
   while(1) {
-    delay_millis(TIM2, 200);
+    // delay_millis(DELAY_TIM, 200);
     
 
-
+    // On edge of A
+    if (flagA){
+      count += 1;
+      if (A) {
+        // falling edge
+        if (B) { dir = 1; }
+        else { dir = -1; }
+        A = 0;
+      }
+      else {
+        // rising edge
+        if (B) { dir = -1; }
+        else { dir = 1; }
+        A = 1;
+      }
+    }
+    
+    // On edge of B
+    if (flagB) {
+      count += 1;
+      if (B) {
+        // falling edge
+        if (A) { dir = -1; }
+        else { dir = 1; }
+        B = 0;
+      }
+      else {
+        // rising edge
+        if (A) { dir = 1; }
+        else { dir = -1; }
+        B = 1;
+      }
+    }
+    
+    // Calculate and print velocity
+    if (flagPrint) {
+      if (count == 0){
+        printVelocity(0);
+      }
+      else{
+        float velocity = calcVelocity(count);
+        printVelocity(velocity);
+      }
+      // Reset count
+      count = 0;
+    }
   }
 
 }
@@ -68,7 +145,6 @@ void EXTI0_IRQHandler(void){
     // If so, clear the interrupt
     EXTI->PR1 |= (1 << 0);
 
-    // Set a flag 
     flagA = 1;
 
   }
@@ -76,6 +152,23 @@ void EXTI0_IRQHandler(void){
 
 void EXTI1_IRQHandler(void){
   // Check that the motor was what triggered the interrupt
-  if (EXTI_PR1 & (1 << 1)) {
+  if (EXTI->PR1 & (1 << 1)) {
     // If so, clear the interrupt
     EXTI->PR1 |= (1 << 1)
+
+    // Set flag
+    flagB = 1;
+
+  }
+}
+
+void TIM2_IRQHandler(void){
+  // Check that the timer was what triggered the interrupt 
+  if (PRINT_TIM->SR & 1) {
+    // If so, reset timer 
+    init_delay(PRINT_TIM, 1000);
+
+    // Set flag
+    flagPrint = 1;
+  }
+}
