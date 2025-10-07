@@ -1,8 +1,8 @@
-// motor_read.c
+// motor_polling.c
 // Emily Kendrick
 // ekendrick@hmc.edu
 // 10/4/25
-// Reads motor encoder inputs from a quadrature encoder and calculates average velocity over the last second.
+// Polls motor encoder inputs from a quadrature encoder and calculates average velocity over the last second.
 // Prints velocity every second.
 
 #include "main.h"
@@ -63,75 +63,37 @@ int main(void) {
 
   // Enable SYSCFG clock domain in RCC
   RCC->APB2ENR |= RCC_APB2ENR_SYSCFGEN;
-  // Configure EXTICR for the input button interrupt
-  SYSCFG->EXTICR[0] |= _VAL2FLD(SYSCFG_EXTICR1_EXTI0, 0b001); // Select PB0 
-  SYSCFG->EXTICR[0] |= _VAL2FLD(SYSCFG_EXTICR1_EXTI1, 0b001); // Select PB1
 
   // Enable interrupts globally
   __enable_irq();
 
-  // Configure interrupt for both rising and falling edges of GPIO pins for motor inputs 
-  // Configure mask bit
-  EXTI->IMR1 |= (1 << gpioPinOffset(MOTORA_PIN)); 
-  EXTI->IMR1 |= (1 << gpioPinOffset(MOTORB_PIN));
 
-  // Enable rising edge trigger
-  EXTI->RTSR1 |= (1 << gpioPinOffset(MOTORA_PIN));
-  EXTI->RTSR1 |= (1 << gpioPinOffset(MOTORB_PIN));
-
-  // Enable falling edge trigger
-  EXTI->FTSR1 |= (1 << gpioPinOffset(MOTORA_PIN));
-  EXTI->FTSR1 |= (1 << gpioPinOffset(MOTORB_PIN));
-
-  // Turn on EXTI interrupt in NVIC_ISER
-  NVIC->ISER[0] |= (1 << EXTI0_IRQn);
-  NVIC->ISER[0] |= (1 << EXTI1_IRQn);
+  // Turn on interrupt in NVIC_ISER
   NVIC->ISER[0] |= (1 << TIM2_IRQn);   
 
   // Enable interrupts for timer 2 (print timer)
   PRINT_TIM->DIER |= (1 << 0);
   // Disable interrupts for timer 15
   DELAY_TIM->DIER &= ~(1 << 0);
-
-     
+  
+  int prevA;
+  int currA = digitalRead(MOTORA_PIN);
+  int prevB;
+  int currB = digitalRead(MOTORB_PIN);
   
   while(1) {
-    // delay_millis(DELAY_TIM, 100);
+    prevA = currA;
+    currA = digitalRead(MOTORA_PIN);
+    prevB = currB;
+    currB = digitalRead(MOTORB_PIN);
 
-    // On edge of A
-    if (flagA){
+    if (prevA != currA) {
       count += 1;
-      flagA = 0;
-      A = digitalRead(MOTORA_PIN);
-      B = digitalRead(MOTORB_PIN);
-      if (A) {
-        // rising edge
-        if (B) dir = -1;
-        else dir = 1;
-      }
-      else {
-        // falling edge
-        if (B) dir = 1;
-        else dir = -1;
-      }
     }
 
-    if (flagB) {
+    if (prevB != currB) {
       count += 1;
-      flagB = 0;
-      A = digitalRead(MOTORA_PIN);
-      B = digitalRead(MOTORB_PIN);
-      if (B) {
-        // rising edge
-        if (A) dir = 1;
-        else dir = -1;
-      }
-      else {
-        // falling edge
-        if (A) dir = -1;
-        else dir = 1;
-      }
-    }    
+    }
      
     // Calculate and print velocity
     if (flagPrint) {
@@ -149,31 +111,6 @@ int main(void) {
     
 
   }
-}
-
-// Interrupt handler for encoder A input
-void EXTI0_IRQHandler(void){
-  // Check that the motor was what triggered the interrupt
-  if (EXTI->PR1 & (1 << 0)) {
-    // If so, clear the interrupt
-    EXTI->PR1 |= (1 << 0);
-
-    flagA = 1;
-
-  }
-}
-
-// Interrupt handler for encoder B input 
-void EXTI1_IRQHandler(void){
-  // Check that the motor was what triggered the interrupt
-  if (EXTI->PR1 & (1 << 1)) {
-    // If so, clear the interrupt
-    EXTI->PR1 |= (1 << 1);
-
-    // Set flag
-    flagB = 1;
-  }
-  
 }
 
 // Interrupt handler for TIM2

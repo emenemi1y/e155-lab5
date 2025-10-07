@@ -1,4 +1,5 @@
 // STM32L432KC.h
+// Emily Kendrick, ekendrick@hmc.edu, 10/6/25
 // Header to include all other STM32L432KC libraries.
 
 #ifndef STM32L4_H

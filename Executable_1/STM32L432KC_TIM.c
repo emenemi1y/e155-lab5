@@ -1,4 +1,5 @@
 // STM32F401RE_TIM.c
+// Emily Kendrick, ekendrick@hmc.edu, 10/6/25
 // TIM functions
 
 #include "STM32L432KC_TIM.h"

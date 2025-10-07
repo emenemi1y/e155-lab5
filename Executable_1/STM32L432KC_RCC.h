@@ -1,4 +1,5 @@
 // STM32F401RE_RCC.h
+// Emily Kendrick, ekendrick@hmc.edu, 10/6/25
 // Header for RCC functions
 
 #ifndef STM32L4_RCC_H

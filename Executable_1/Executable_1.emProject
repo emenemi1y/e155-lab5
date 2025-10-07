@@ -1,5 +1,5 @@
 <!DOCTYPE CrossStudio_Project_File>
-<solution Name="Executable_1" target="8" version="2">
+<solution Name="lab5_ek" target="8" version="2">
   <configuration
     Name="Debug"
     c_preprocessor_definitions="DEBUG"
@@ -13,7 +13,7 @@
     gcc_debugging_level="Level 2"
     gcc_omit_frame_pointer="Yes"
     gcc_optimization_level="Level 2 balanced" />
-  <project Name="Executable_1">
+  <project Name="lab5_ek">
     <configuration
       LIBRARY_IO_TYPE="RTT"
       Name="Common"
@@ -71,8 +71,14 @@
     </folder>
     <folder Name="Source Files">
       <configuration Name="Common" filter="c;cpp;cxx;cc;h;s;asm;inc" />
+      <file file_name="AI_Prototype.c" />
       <file file_name="main.h" />
-      <file file_name="motor_read.c" />
+      <file file_name="motor_polling.c">
+        <configuration Name="Debug" build_exclude_from_build="Yes" />
+      </file>
+      <file file_name="motor_read.c">
+        <configuration Name="Debug" build_exclude_from_build="Yes" />
+      </file>
     </folder>
     <folder Name="System Files">
       <file file_name="SEGGER_THUMB_Startup.s" />
